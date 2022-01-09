@@ -35,9 +35,14 @@ rm -f ${CODESIGNING_FOLDER_PATH}/Contents/Frameworks/*.a
 
 ### Build your own repo from source
 
-Required Xcode 12.2, and [github cli](https://github.com/cli/cli). Intended to use with github.
+#### Requirements 
+
+- Xcode 12.2
+- [github cli](https://github.com/cli/cli). GitHub’s official command line tool.
+- [xczip](https://github.com/DimaRU/xczip). Create xcframework zip archive for Swift binary package.
 
 1. Install gh: `brew install gh`
-2. Authorize gh: `gh auth`
-2. Fork and clone this repo
-3. Run `./script/fastrtps_build_xctframework.sh 2.1.0 commit`
+2. Install xczip: `brew install DimaRU/formulae/xczip`
+3. Authorize gh: `gh auth`
+4. Fork and clone this repo
+5. Run `./script/fastrtps_build_xctframework.sh 2.1.0 commit`

@@ -4,13 +4,14 @@
 # Copyright © 2020 Dmitriy Borovikov. All rights reserved.
 #
 set -e
-set -x
 
-if [[ $# > 0 ]]; then
+if [[ $# > 1 ]]; then
 TAG=$1
+DATE=$2
 else
-echo "Usage: fastrtps_build_xctframework.sh TAG commit"
+echo "Usage: fastrtps_build_xctframework.sh TAG DATE commit"
 echo "where TAG is FasT-DDS version tag eg. 2.0.1"
+echo "DATE is forced for files in xcframework archive"
 exit -1
 fi
 
@@ -72,7 +73,12 @@ xcodebuild -create-xcframework \
 -library $BUILD/maccatalyst/lib/libfastrtpsa.a \
 -headers $BUILD/maccatalyst/include \
 -output FastDDS.xcframework
-zip --recurse-paths -X --quiet $ZIPNAME FastDDS.xcframework
+
+XCODE_VER="Archive date:$DATE"
+XCODE_VER+=$'\n'
+XCODE_VER+=$(xcodebuild -version 2>&1| tail -n 2)
+echo $XCODE_VER
+xczip FastDDS.xcframework --date $DATE -o $ZIPNAME -c "$XCODE_VER"
 rm -rf FastDDS.xcframework
 
 CHECKSUM=`shasum -a 256 -b $ZIPNAME | awk '{print $1}'`
@@ -95,7 +101,7 @@ let package = Package(
 )
 EOL
 
-if [[ $2 == "commit" ]]; then
+if [[ $3 == "commit" ]]; then
 
 git add Package.swift
 git commit -m "Build $TAG"
