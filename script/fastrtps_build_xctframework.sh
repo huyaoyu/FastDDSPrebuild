@@ -43,10 +43,7 @@ export PROJECT_TEMP_DIR=$BUILD/temp
 export SOURCE_DIR=$BUILD/src
 
 if [ ! -d $SOURCE_DIR/memory ]; then
-git clone --quiet https://github.com/foonathan/memory.git $SOURCE_DIR/memory
-pushd $SOURCE_DIR/memory > /dev/null
-git checkout 7851d12
-popd > /dev/null
+git clone --quiet https://github.com/foonathan/memory.git --branch v0.7-1 --depth 1 $SOURCE_DIR/memory
 fi
 if [ ! -d $SOURCE_DIR/Fast-DDS ]; then
 git clone --quiet --recurse-submodules --depth 1 $FastRTPS_repo $SOURCE_DIR/Fast-DDS

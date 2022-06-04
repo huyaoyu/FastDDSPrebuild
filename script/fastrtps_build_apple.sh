@@ -126,6 +126,6 @@ fi
 rm -rf "$PROJECT_TEMP_DIR"
 
 pushd "$BUILT_PRODUCTS_DIR/lib" > /dev/null
-libtool -static -D -o libfastrtpsa.a libfastrtps.a libfastcdr.a libfoonathan_memory-0.6.2.a
+libtool -static -D -o libfastrtpsa.a libfastrtps.a libfastcdr.a libfoonathan_memory-0.7.1.a
 popd > /dev/null
 }
