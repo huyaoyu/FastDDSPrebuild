@@ -9,7 +9,7 @@ let package = Package(
     ],
     targets: [
         .binaryTarget(name: "FastDDS",
-                      url: "https://github.com/DimaRU/FastDDSPrebuild/releases/download/2.1.0/fastrtps-2.1.0.xcframework.zip",
-                      checksum: "efdb24d6a6bc3f666a815061d18f836c10c717db01cfbe040d4b8b80b52a3a1b")
+                      url: "https://github.com/DimaRU/FastDDSPrebuild/releases/download/v2.1.1/fastrtps-v2.1.1.xcframework.zip",
+                      checksum: "a3e13c5b68baa81c70895f5794766b911f3c816b96ba05eb2df8f4896fd22e28")
     ]
 )
