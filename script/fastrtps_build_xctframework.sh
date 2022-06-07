@@ -5,20 +5,18 @@
 #
 set -e
 
-if [[ $# > 1 ]]; then
+if [[ $# > 0 ]]; then
 TAG=$1
-DATE=$2
 else
-echo "Usage: fastrtps_build_xctframework.sh TAG DATE commit"
-echo "where TAG is FasT-DDS version tag eg. 2.0.1"
-echo "DATE is forced for files in xcframework archive"
+echo "Usage: fastrtps_build_xctframework.sh TAG commit"
+echo "where TAG is Fast-DDS version tag eg. v2.0.1"
 exit -1
 fi
 
 BRANCH=$(git branch --show-current)
 if [ "$BRANCH" == "master" ]
 then
-    FastRTPS_repo="-b v$TAG https://github.com/eProsima/Fast-DDS.git"
+    FastRTPS_repo="-b $TAG https://github.com/eProsima/Fast-DDS.git"
     ReleaseNote="Fast-DDS $TAG: iOS(armv7, armv7s, arm64), iOS Simulator(x86_64, arm64), macOS(x86_64, arm64), maccatalyst (x86_64, arm64)."
 elif [ "$BRANCH" == "whitelist" ]
 then
@@ -49,6 +47,10 @@ if [ ! -d $SOURCE_DIR/Fast-DDS ]; then
 git clone --quiet --recurse-submodules --depth 1 $FastRTPS_repo $SOURCE_DIR/Fast-DDS
 fi
 
+pushd $SOURCE_DIR/Fast-DDS > /dev/null
+DATE=$(git tag -l --format="%(creatordate:iso)" $1)
+popd > /dev/null
+
 source script/fastrtps_build_apple.sh
 
 # BUILT_PRODUCTS_DIR=$BUILD/macosx
@@ -75,7 +77,7 @@ XCODE_VER="Archive date:$DATE"
 XCODE_VER+=$'\n'
 XCODE_VER+=$(xcodebuild -version 2>&1| tail -n 2)
 echo $XCODE_VER
-xczip FastDDS.xcframework --date $DATE -o $ZIPNAME -c "$XCODE_VER"
+xczip FastDDS.xcframework --iso-date "$DATE" -o $ZIPNAME -c "$XCODE_VER"
 rm -rf FastDDS.xcframework
 
 CHECKSUM=`shasum -a 256 -b $ZIPNAME | awk '{print $1}'`
@@ -98,7 +100,7 @@ let package = Package(
 )
 EOL
 
-if [[ $3 == "commit" ]]; then
+if [[ $2 == "commit" ]]; then
 
 git add Package.swift
 git commit -m "Build $TAG"
@@ -106,6 +108,10 @@ git tag $TAG
 git push
 git push --tags
 gh release create "$TAG" $ZIPNAME --title "$TAG" --notes "$ReleaseNote"
-
+#
+# Cleanup
+#
+rm -rf build
+git clean -x -d -f
 fi
 popd > /dev/null
