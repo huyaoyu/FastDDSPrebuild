@@ -13,6 +13,11 @@ echo "where TAG is Fast-DDS version tag eg. v2.0.1"
 exit -1
 fi
 
+vergte() {
+    [  "$2" = "`echo -e "$1\n$2" | sort -V | head -n1`" ] && echo "true" || echo "false"
+}
+
+#make tag
 BRANCH=$(git branch --show-current)
 if [ "$BRANCH" == "master" ]
 then
@@ -33,6 +38,7 @@ ZIPNAME=fastrtps-$TAG.xcframework.zip
 GIT_REMOTE_URL_UNFINISHED=`git config --get remote.origin.url|sed "s=^ssh://==; s=^https://==; s=:=/=; s/git@//; s/.git$//;"`
 DOWNLOAD_URL=https://$GIT_REMOTE_URL_UNFINISHED/releases/download/$TAG/$ZIPNAME
 
+#clone
 export ROOT_PATH=$(cd "$(dirname "$0")/.."; pwd -P)
 pushd $ROOT_PATH > /dev/null
 
@@ -51,6 +57,12 @@ pushd $SOURCE_DIR/Fast-DDS > /dev/null
 DATE=$(git tag -l --format="%(creatordate:iso)" $1)
 popd > /dev/null
 
+# path
+if [ $(vergte $1 v2.2.0) = "true" ]; then
+    patch --directory=build/src/Fast-DDS -p1 <script/IPFinder.patch
+fi
+
+#build
 source script/fastrtps_build_apple.sh
 
 # BUILT_PRODUCTS_DIR=$BUILD/macosx

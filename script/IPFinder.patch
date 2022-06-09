@@ -1,0 +1,58 @@
+diff --git a/src/cpp/utils/IPFinder.cpp b/src/cpp/utils/IPFinder.cpp
+index 1d39214..053c3ab 100644
+--- a/src/cpp/utils/IPFinder.cpp
++++ b/src/cpp/utils/IPFinder.cpp
+@@ -37,13 +37,17 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <unistd.h>
+ #include <string.h>
+ #include <net/if.h>
+ #include <sys/ioctl.h>
++#if defined(__APPLE__)
++#if !__is_target_os(ios)
+ #include <net/if_arp.h>
++#endif
++#endif // if defined(__APPLE__)
+ #include <errno.h>
+ #if defined(__APPLE__)
+ #include <sys/types.h>
+ #include <sys/sysctl.h>
+ #include <net/if_dl.h>
+ #include <netinet/in.h>
+@@ -269,12 +273,21 @@ bool IPFinder::getAllMACAddress(
+     free(adapter_addresses);
+     return true;
+ }
+ 
+ #elif defined(__APPLE__)
+ 
++#if __is_target_os(ios)
++bool IPFinder::getAllMACAddress(
++        std::vector<info_MAC>* macs)
++{
++    return false;
++}
++
++#else
++
+ bool IPFinder::getAllMACAddress(
+         std::vector<info_MAC>* macs)
+ {
+     int mib[6];
+     mib[0] = CTL_NET;
+     mib[1] = AF_ROUTE;
+@@ -322,12 +335,13 @@ bool IPFinder::getAllMACAddress(
+         }
+ 
+         free(buf);
+     }
+     return true;
+ }
++#endif
+ 
+ #elif defined(__linux__)
+ 
+ bool IPFinder::getAllMACAddress(
+         std::vector<info_MAC>* macs)
+ {
