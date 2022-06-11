@@ -45,4 +45,4 @@ rm -f ${CODESIGNING_FOLDER_PATH}/Contents/Frameworks/*.a
 2. Install xczip: `brew install DimaRU/formulae/xczip`
 3. Authorize gh: `gh auth`
 4. Fork and clone this repo
-5. Run `./script/fastrtps_build_xctframework.sh 2.1.0 commit`
+5. Run `./script/fastrtps_build_xctframework.sh v2.6.1 commit`
