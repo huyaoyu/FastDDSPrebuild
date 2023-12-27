@@ -38,7 +38,7 @@ xcodebuild build -scheme install -destination 'generic/platform=macOS,variant=Ma
 cmake -S$SOURCE_DIR/Fast-DDS -B"$PROJECT_TEMP_DIR/Fast-DDS" \
 -D CMAKE_INSTALL_PREFIX="$BUILT_PRODUCTS_DIR" \
 -D CMAKE_TOOLCHAIN_FILE="$ROOT_PATH/script/cmake/maccatalyst.toolchain.cmake" \
--D foonathan_memory_DIR="$BUILT_PRODUCTS_DIR/share/foonathan_memory/cmake" \
+-D foonathan_memory_DIR="$BUILT_PRODUCTS_DIR/lib/foonathan_memory/cmake" \
 -D SQLITE3_SUPPORT=OFF \
 -D THIRDPARTY=ON \
 -D COMPILE_EXAMPLES=OFF \
@@ -68,7 +68,7 @@ cmake --build "$PROJECT_TEMP_DIR/memory" --config Release --target install
 
 cmake -S$SOURCE_DIR/Fast-DDS -B"$PROJECT_TEMP_DIR/Fast-DDS" \
 -D CMAKE_INSTALL_PREFIX="$BUILT_PRODUCTS_DIR" \
--D foonathan_memory_DIR="$BUILT_PRODUCTS_DIR/share/foonathan_memory/cmake" \
+-D foonathan_memory_DIR="$BUILT_PRODUCTS_DIR/lib/foonathan_memory/cmake" \
 -D SQLITE3_SUPPORT=OFF \
 -D THIRDPARTY=ON \
 -D COMPILE_EXAMPLES=OFF \
@@ -106,13 +106,13 @@ cmake --build "$PROJECT_TEMP_DIR/memory" --config Release --target install --
 
 cmake -S$SOURCE_DIR/Fast-DDS -B"$PROJECT_TEMP_DIR/Fast-DDS" \
 -D CMAKE_TOOLCHAIN_FILE="$ROOT_PATH/script/cmake/ios.toolchain.cmake" \
+-D CMAKE_INSTALL_PREFIX="$BUILT_PRODUCTS_DIR" \
+-D foonathan_memory_DIR="$BUILT_PRODUCTS_DIR/lib/foonathan_memory/cmake" \
 -D CMAKE_CONFIGURATION_TYPES=Release \
 -D CMAKE_C_COMPILER=clang \
 -D CMAKE_CXX_COMPILER=clang++ \
 -D CMAKE_XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET=$IPHONEOS_DEPLOYMENT_TARGET \
 -D BUILD_SHARED_LIBS=NO \
--D CMAKE_INSTALL_PREFIX="$BUILT_PRODUCTS_DIR" \
--D foonathan_memory_DIR="$BUILT_PRODUCTS_DIR/foonathan_memory/cmake" \
 -D SQLITE3_SUPPORT=OFF \
 -D THIRDPARTY=ON \
 -D COMPILE_EXAMPLES=OFF \
@@ -123,9 +123,43 @@ cmake -S$SOURCE_DIR/Fast-DDS -B"$PROJECT_TEMP_DIR/Fast-DDS" \
 
 cmake --build "$PROJECT_TEMP_DIR/Fast-DDS" --config Release --target install --
 fi
+
+if [ "$PLATFORM_NAME" = "xros" ] || [ "$PLATFORM_NAME" = "xrsimulator" ]; then
+cmake -S$SOURCE_DIR/memory -B"$PROJECT_TEMP_DIR/memory" \
+-D CMAKE_INSTALL_PREFIX="$BUILT_PRODUCTS_DIR" \
+-D CMAKE_XCODE_ATTRIBUTE_SUPPORTED_PLATFORMS="$PLATFORM_NAME" \
+-D FOONATHAN_MEMORY_BUILD_EXAMPLES=OFF \
+-D FOONATHAN_MEMORY_BUILD_TESTS=OFF \
+-D FOONATHAN_MEMORY_BUILD_TOOLS=OFF \
+-D CMAKE_DEBUG_POSTFIX="" \
+-D CMAKE_SYSTEM_NAME=visionOS \
+-D CMAKE_OSX_ARCHITECTURES="$ARCHS" \
+-D CMAKE_CONFIGURATION_TYPES=Release \
+-G Xcode
+cmake --build "$PROJECT_TEMP_DIR/memory" --config Release --target install -- -sdk "$PLATFORM_NAME"
+
+cmake -S$SOURCE_DIR/Fast-DDS -B"$PROJECT_TEMP_DIR/Fast-DDS" \
+-D CMAKE_INSTALL_PREFIX="$BUILT_PRODUCTS_DIR" \
+-D foonathan_memory_DIR="$BUILT_PRODUCTS_DIR/lib/foonathan_memory/cmake" \
+-D CMAKE_XCODE_ATTRIBUTE_SUPPORTED_PLATFORMS="$PLATFORM_NAME" \
+-D SQLITE3_SUPPORT=OFF \
+-D THIRDPARTY=ON \
+-D COMPILE_EXAMPLES=OFF \
+-D COMPILE_TOOLS=OFF \
+-D SHM_TRANSPORT_DEFAULT=OFF \
+-D BUILD_DOCUMENTATION=OFF \
+-D BUILD_SHARED_LIBS=OFF \
+-D CMAKE_SYSTEM_NAME=visionOS \
+-D CMAKE_OSX_ARCHITECTURES="$ARCHS" \
+-D CMAKE_CONFIGURATION_TYPES=Release \
+-G Xcode
+
+cmake --build "$PROJECT_TEMP_DIR/Fast-DDS" --config Release --target install -- -sdk "$PLATFORM_NAME"
+fi
+
 rm -rf "$PROJECT_TEMP_DIR"
 
 pushd "$BUILT_PRODUCTS_DIR/lib" > /dev/null
-libtool -static -D -o libfastrtpsa.a libfastrtps.a libfastcdr.a libfoonathan_memory-0.7.1.a
+libtool -static -D -o libfastrtpsa.a libfastrtps.a libfastcdr.a libfoonathan_memory-0.7.3.a
 popd > /dev/null
 }

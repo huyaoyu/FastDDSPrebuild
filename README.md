@@ -9,6 +9,8 @@
 | iOS               | arm64 armv7 armv7s |
 | iOS Simulator     | x86_64 arm64       |
 | Mac Catalyst      | x86_64 arm64       |
+| xrOS              | arm64              |
+| xrOS Simulator    | arm64              |
 
 ### Usage
 
@@ -37,7 +39,8 @@ rm -f ${CODESIGNING_FOLDER_PATH}/Contents/Frameworks/*.a
 
 #### Requirements 
 
-- Xcode 12.2
+- Xcode 15
+- cmake 3.28
 - [github cli](https://github.com/cli/cli). GitHub’s official command line tool.
 - [xczip](https://github.com/DimaRU/xczip). Create xcframework zip archive for Swift binary package.
 

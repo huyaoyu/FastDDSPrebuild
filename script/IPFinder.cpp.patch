@@ -1,0 +1,16 @@
+diff --git a/src/cpp/utils/IPFinder.cpp b/src/cpp/utils/IPFinder.cpp
+index 2611f664347..cda9388cbec 100644
+--- a/src/cpp/utils/IPFinder.cpp
++++ b/src/cpp/utils/IPFinder.cpp
+@@ -40,7 +44,11 @@
+ #include <string.h>
+ #include <net/if.h>
+ #include <sys/ioctl.h>
++#if defined(__APPLE__) && __is_target_os(ios)
++#include <net/ethernet.h>
++#else
+ #include <net/if_arp.h>
++#endif // if defined(__APPLE__) && __is_target_os(ios)
+ #include <errno.h>
+ #if defined(__APPLE__)
+ #include <sys/types.h>
